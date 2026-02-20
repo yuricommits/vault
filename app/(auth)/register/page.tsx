@@ -54,7 +54,7 @@ export default function RegisterPage() {
                         name="name"
                         type="text"
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:border-gray-400"
                         placeholder="Kim"
                     />
                 </div>
@@ -67,7 +67,7 @@ export default function RegisterPage() {
                         name="email"
                         type="email"
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:border-gray-400"
                         placeholder="kim@example.com"
                     />
                 </div>
@@ -81,7 +81,7 @@ export default function RegisterPage() {
                         type="password"
                         required
                         minLength={8}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:border-gray-400"
                         placeholder="••••••••"
                     />
                 </div>

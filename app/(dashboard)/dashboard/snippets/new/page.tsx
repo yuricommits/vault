@@ -12,10 +12,8 @@ export default async function NewSnippetPage() {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">New Snippet</h2>
-        <p className="text-gray-500 text-sm mt-1">
-          Add a new code snippet to your Vault
-        </p>
+        <p className="text-xs text-[#666666] mb-2">// NEW SNIPPET</p>
+        <h2 className="text-xl text-white font-bold">Add a snippet.</h2>
       </div>
       <NewSnippetForm />
     </div>

@@ -4,164 +4,142 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const LANGUAGES = [
-    "javascript",
-    "typescript",
-    "python",
-    "rust",
-    "go",
-    "java",
-    "css",
-    "html",
-    "bash",
-    "sql",
-    "json",
-    "markdown",
+  "javascript",
+  "typescript",
+  "python",
+  "rust",
+  "go",
+  "java",
+  "css",
+  "html",
+  "bash",
+  "sql",
+  "json",
+  "markdown",
 ];
 
 interface Snippet {
-    id: string;
-    title: string;
-    description: string | null;
-    code: string;
-    language: string;
+  id: string;
+  title: string;
+  description: string | null;
+  code: string;
+  language: string;
 }
 
 export default function EditSnippetForm({ snippet }: { snippet: Snippet }) {
-    const router = useRouter();
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
-    async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
-        e.preventDefault();
-        setError(null);
-        setLoading(true);
+  const inputClass = "w-full px-3 py-2 bg-black border border-white/10 text-sm text-white placeholder-white/30 focus:border-white/20 transition";
 
-        const formData = new FormData(e.currentTarget);
-        const title = formData.get("title") as string;
-        const description = formData.get("description") as string;
-        const code = formData.get("code") as string;
-        const language = formData.get("language") as string;
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-        const res = await fetch(`/api/snippets/${snippet.id}`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title, description, code, language }),
-        });
+    const formData = new FormData(e.currentTarget);
+    const title = formData.get("title") as string;
+    const description = formData.get("description") as string;
+    const code = formData.get("code") as string;
+    const language = formData.get("language") as string;
 
-        const data = await res.json();
+    const res = await fetch(`/api/snippets/${snippet.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, description, code, language }),
+    });
 
-        if (!res.ok) {
-            setError(data.message);
-            setLoading(false);
-            return;
-        }
+    const data = await res.json();
 
-        router.push(`/dashboard/snippets/${snippet.id}`);
+    if (!res.ok) {
+      setError(data.message);
+      setLoading(false);
+      return;
     }
 
-    async function handleDelete() {
-        if (!confirm("Are you sure you want to delete this snippet?")) return;
-        setDeleting(true);
+    router.push(`/dashboard/snippets/${snippet.id}`);
+  }
 
-        const res = await fetch(`/api/snippets/${snippet.id}`, {
-            method: "DELETE",
-        });
+  async function handleDelete() {
+    if (!confirm("Are you sure you want to delete this snippet?")) return;
+    setDeleting(true);
 
-        if (!res.ok) {
-            setDeleting(false);
-            return;
-        }
+    const res = await fetch(`/api/snippets/${snippet.id}`, {
+      method: "DELETE",
+    });
 
-        router.push("/dashboard");
+    if (!res.ok) {
+      setDeleting(false);
+      return;
     }
 
-    return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Title
-                </label>
-                <input
-                    name="title"
-                    type="text"
-                    required
-                    defaultValue={snippet.title}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none"
-                />
-            </div>
+    router.push("/dashboard");
+  }
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                </label>
-                <input
-                    name="description"
-                    type="text"
-                    defaultValue={snippet.description ?? ""}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none"
-                />
-            </div>
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <label className="block text-xs text-white/40 mb-2">title</label>
+        <input name="title" type="text" required defaultValue={snippet.title} className={inputClass} />
+      </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Language
-                </label>
-                <select
-                    name="language"
-                    required
-                    defaultValue={snippet.language}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none"
-                >
-                    {LANGUAGES.map((lang) => (
-                        <option key={lang} value={lang}>
-                            {lang}
-                        </option>
-                    ))}
-                </select>
-            </div>
+      <div>
+        <label className="block text-xs text-white/40 mb-2">description</label>
+        <input name="description" type="text" defaultValue={snippet.description ?? ""} className={inputClass} />
+      </div>
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Code
-                </label>
-                <textarea
-                    name="code"
-                    required
-                    rows={12}
-                    defaultValue={snippet.code}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 font-mono focus:outline-none"
-                />
-            </div>
+      <div>
+        <label className="block text-xs text-white/40 mb-2">language</label>
+        <select name="language" required defaultValue={snippet.language} className={inputClass}>
+          {LANGUAGES.map((lang) => (
+            <option key={lang} value={lang} className="bg-black">
+              {lang}
+            </option>
+          ))}
+        </select>
+      </div>
 
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+      <div>
+        <label className="block text-xs text-white/40 mb-2">code</label>
+        <textarea
+          name="code"
+          required
+          rows={14}
+          defaultValue={snippet.code}
+          className={`${inputClass} font-mono`}
+        />
+      </div>
 
-            <div className="flex items-center justify-between">
-                <div className="flex gap-3">
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition"
-                    >
-                        {loading ? "Saving..." : "Save Changes"}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => router.back()}
-                        className="bg-white text-gray-700 px-4 py-2 rounded-lg text-sm font-medium border border-gray-300 hover:bg-gray-50 transition"
-                    >
-                        Cancel
-                    </button>
-                </div>
-                <button
-                    type="button"
-                    onClick={handleDelete}
-                    disabled={deleting}
-                    className="text-red-500 hover:text-red-700 text-sm font-medium disabled:opacity-50 transition"
-                >
-                    {deleting ? "Deleting..." : "Delete Snippet"}
-                </button>
-            </div>
-        </form>
-    );
+      {error && <p className="text-red-400 text-xs">{error}</p>}
+
+      <div className="flex items-center justify-between">
+        <div className="flex gap-3">
+          <button
+            type="submit"
+            disabled={loading}
+            className="text-xs text-black bg-white px-4 py-2 hover:bg-white/90 disabled:opacity-50 transition font-medium"
+          >
+            {loading ? "saving..." : "save changes"}
+          </button>
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="text-xs text-white/40 border border-white/10 px-4 py-2 hover:text-white hover:border-white/20 transition"
+          >
+            cancel
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={deleting}
+          className="text-xs text-red-400 hover:text-red-300 disabled:opacity-50 transition"
+        >
+          {deleting ? "deleting..." : "delete snippet"}
+        </button>
+      </div>
+    </form>
+  );
 }

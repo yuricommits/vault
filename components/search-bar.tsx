@@ -62,26 +62,26 @@ export default function SearchBar() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search snippets..."
-        className="w-full px-3 py-1.5 border border-gray-200 rounded-none text-sm text-gray-900 bg-white outline-none focus:border-gray-400 transition"
+        className="w-full px-3 py-1.5 text-xs text-white bg-black border border-white/10 focus:border-white/20 transition"
       />
       {loading && (
-        <div className="absolute right-3 top-2 text-gray-400 text-xs">
-          Searching...
+        <div className="absolute right-3 top-2 text-white/40 text-xs">
+          searching...
         </div>
       )}
       {open && results.length > 0 && (
-        <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 z-50 overflow-hidden">
+        <div className="absolute top-full mt-1 w-full bg-black border border-white/10 z-50 overflow-hidden">
           {results.map((snippet) => (
             <button
               key={snippet.id}
               onClick={() => handleSelect(snippet.id)}
-              className="w-full text-left px-3 py-2.5 hover:bg-gray-50 transition border-b border-gray-100 last:border-0"
+              className="w-full text-left px-3 py-2.5 hover:bg-white/5 transition border-b border-white/5 last:border-0"
             >
-              <p className="text-sm font-medium text-gray-900">{snippet.title}</p>
+              <p className="text-xs text-white">{snippet.title}</p>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-xs font-mono text-gray-400">{snippet.language}</span>
+                <span className="text-xs text-white/40">{snippet.language}</span>
                 {snippet.description && (
-                  <span className="text-xs text-gray-400 truncate">{snippet.description}</span>
+                  <span className="text-xs text-white/30 truncate">{snippet.description}</span>
                 )}
               </div>
             </button>
@@ -89,8 +89,8 @@ export default function SearchBar() {
         </div>
       )}
       {open && results.length === 0 && !loading && (
-        <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 z-50 p-4 text-center">
-          <p className="text-sm text-gray-400">No snippets found</p>
+        <div className="absolute top-full mt-1 w-full bg-black border border-white/10 z-50 p-4 text-center">
+          <p className="text-xs text-white/40">no snippets found</p>
         </div>
       )}
     </div>

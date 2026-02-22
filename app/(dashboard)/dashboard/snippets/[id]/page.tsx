@@ -33,38 +33,39 @@ export default async function SnippetPage({
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-start justify-between mb-8">
         <div>
           <Link
             href="/dashboard"
-            className="text-sm text-gray-500 hover:text-gray-900 transition mb-2 block"
+            className="text-xs text-white/40 hover:text-white transition mb-3 block"
           >
-            ← Back to Vault
+            ← back
           </Link>
-          <h2 className="text-2xl font-bold text-gray-900">{snippet.title}</h2>
+          <p className="text-xs text-white/40 mb-1">// SNIPPET</p>
+          <h2 className="text-xl text-white font-bold">{snippet.title}</h2>
           {snippet.description && (
-            <p className="text-gray-500 text-sm mt-1">{snippet.description}</p>
+            <p className="text-sm text-white/40 mt-1">{snippet.description}</p>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-md font-mono">
+        <div className="flex items-center gap-3 mt-6">
+          <span className="text-xs text-white/40 border border-white/10 px-2 py-1 font-mono">
             {snippet.language}
           </span>
           <CopyButton code={snippet.code} />
           <Link
             href={`/dashboard/snippets/${snippet.id}/edit`}
-            className="bg-black text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition"
+            className="text-xs text-black bg-white px-3 py-1.5 hover:bg-white/90 transition font-medium"
           >
-            Edit
+            edit
           </Link>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden mb-6">
+      <div className="border border-white/10 overflow-hidden mb-6">
         <CodeBlock code={snippet.code} language={snippet.language} />
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="border border-white/10 p-6">
         <TagManager snippetId={snippet.id} />
       </div>
     </div>

@@ -2,28 +2,43 @@
 @import "prismjs/themes/prism-tomorrow.css";
 
 @theme {
-    --font-sans: var(--font-geist-sans);
+    --font-sans: var(--font-geist-mono);
     --font-mono: var(--font-geist-mono);
-    --color-background: #ffffff;
-    --color-foreground: #111111;
 }
 
 body {
-    background: var(--color-background);
-    color: var(--color-foreground);
+    background: #000000;
+    color: #ffffff;
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
 }
 
 input,
-button,
-select,
 textarea,
+select,
+button,
 a {
-    outline: none;
+    outline: none !important;
+    box-shadow: none !important;
+    border-radius: 2px;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-    outline: none;
-    box-shadow: none;
+input,
+textarea,
+select {
+    color: #ffffff;
+    background: #0d0d0d;
+    border: 1px solid #222222;
+    font-family: var(--font-geist-mono), monospace;
+    font-size: 14px;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #555555;
+}
+
+* {
+    box-sizing: border-box;
 }

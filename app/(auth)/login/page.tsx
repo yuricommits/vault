@@ -2,92 +2,88 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function LoginPage() {
-    const router = useRouter();
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        setError(null);
-        setLoading(true);
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-        const formData = new FormData(e.currentTarget);
-        const email = formData.get("email") as string;
-        const password = formData.get("password") as string;
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-        const result = await signIn("credentials", {
-            email,
-            password,
-            redirect: false,
-        });
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
 
-        if (result?.error) {
-            setError("Invalid email or password");
-            setLoading(false);
-            return;
-        }
-
-        router.push("/dashboard");
+    if (result?.error) {
+      setError("Invalid email or password");
+      setLoading(false);
+      return;
     }
 
-    return (
-        <>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Welcome back
-            </h1>
-            <p className="text-gray-500 text-sm mb-6">Sign in to your Vault</p>
+    window.location.href = "/dashboard";
+  }
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email
-                    </label>
-                    <input
-                        name="email"
-                        type="email"
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-gray-400"
-                        placeholder="kim@example.com"
-                    />
-                </div>
+  const inputClass = "w-full px-3 py-2 bg-black border border-white/10 text-sm text-white placeholder-white/30 focus:border-white/20 transition";
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Password
-                    </label>
-                    <input
-                        name="password"
-                        type="password"
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-gray-400"
-                        placeholder="••••••••"
-                    />
-                </div>
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="w-full max-w-sm">
+        <div className="mb-8">
+          <p className="text-xs text-white/40 mb-2">// VAULT</p>
+          <h2 className="text-xl text-white font-bold">Sign in.</h2>
+          <p className="text-xs text-white/40 mt-1">Welcome back.</p>
+        </div>
 
-                {error && <p className="text-red-500 text-sm">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs text-white/40 mb-2">email</label>
+            <input
+              name="email"
+              type="email"
+              required
+              placeholder="you@example.com"
+              className={inputClass}
+            />
+          </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-black text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition"
-                >
-                    {loading ? "Signing in..." : "Sign in"}
-                </button>
-            </form>
+          <div>
+            <label className="block text-xs text-white/40 mb-2">password</label>
+            <input
+              name="password"
+              type="password"
+              required
+              placeholder="••••••••"
+              className={inputClass}
+            />
+          </div>
 
-            <p className="text-center text-sm text-gray-500 mt-6">
-                Don&apos;t have an account?{" "}
-                <Link
-                    href="/register"
-                    className="text-black font-medium hover:underline"
-                >
-                    Create one
-                </Link>
-            </p>
-        </>
-    );
+          {error && <p className="text-red-400 text-xs">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full text-sm text-black bg-white py-2 hover:bg-white/90 disabled:opacity-50 transition font-medium"
+          >
+            {loading ? "signing in..." : "sign in"}
+          </button>
+        </form>
+
+        <p className="text-xs text-white/40 mt-6 text-center">
+          no account?{" "}
+          <Link href="/register" className="text-white hover:text-white/80 transition">
+            create one
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
 }

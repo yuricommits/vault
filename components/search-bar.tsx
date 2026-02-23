@@ -30,11 +30,9 @@ export default function SearchBar() {
 
   useEffect(() => {
     if (!query.trim()) {
-      const timeout = setTimeout(() => {
-        setResults([]);
-        setOpen(false);
-      }, 0);
-      return () => clearTimeout(timeout);
+      setResults([]);
+      setOpen(false);
+      return;
     }
 
     const timeout = setTimeout(async () => {
@@ -56,41 +54,46 @@ export default function SearchBar() {
   }
 
   return (
-    <div ref={ref} className="relative w-64">
-      <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search snippets..."
-        className="w-full px-3 py-1.5 text-xs text-white bg-black border border-white/10 focus:border-white/20 transition"
-      />
-      {loading && (
-        <div className="absolute right-3 top-2 text-white/40 text-xs">
-          searching...
-        </div>
-      )}
-      {open && results.length > 0 && (
-        <div className="absolute top-full mt-1 w-full bg-black border border-white/10 z-50 overflow-hidden">
-          {results.map((snippet) => (
-            <button
-              key={snippet.id}
-              onClick={() => handleSelect(snippet.id)}
-              className="w-full text-left px-3 py-2.5 hover:bg-white/5 transition border-b border-white/5 last:border-0"
-            >
-              <p className="text-xs text-white">{snippet.title}</p>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-xs text-white/40">{snippet.language}</span>
-                {snippet.description && (
-                  <span className="text-xs text-white/30 truncate">{snippet.description}</span>
-                )}
-              </div>
-            </button>
-          ))}
-        </div>
-      )}
-      {open && results.length === 0 && !loading && (
-        <div className="absolute top-full mt-1 w-full bg-black border border-white/10 z-50 p-4 text-center">
-          <p className="text-xs text-white/40">no snippets found</p>
+    <div ref={ref} className="relative w-56">
+      <div className="relative flex items-center">
+        <span className="absolute left-3 text-white/20 text-xs pointer-events-none">/</span>
+        <input
+          data-search
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => query && setOpen(true)}
+          placeholder="search snippets"
+          className="w-full pl-7 pr-3 py-1.5 text-xs text-white/70 bg-white/[0.03] border border-white/10 focus:border-white/20 focus:text-white placeholder-white/20 transition outline-none"
+        />
+        {loading && (
+          <span className="absolute right-3 text-white/20 text-[10px]">...</span>
+        )}
+      </div>
+
+      {open && (
+        <div className="absolute top-full mt-1 w-full bg-[#0a0a0a] border border-white/10 z-50 overflow-hidden">
+          {results.length > 0 ? (
+            results.map((snippet) => (
+              <button
+                key={snippet.id}
+                onClick={() => handleSelect(snippet.id)}
+                className="w-full text-left px-3 py-2.5 hover:bg-white/5 transition border-b border-white/5 last:border-0"
+              >
+                <p className="text-xs text-white">{snippet.title}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[10px] text-white/30 font-mono">{snippet.language}</span>
+                  {snippet.description && (
+                    <span className="text-[10px] text-white/20 truncate">{snippet.description}</span>
+                  )}
+                </div>
+              </button>
+            ))
+          ) : (
+            <div className="px-3 py-4 text-center">
+              <p className="text-xs text-white/30">no snippets found</p>
+            </div>
+          )}
         </div>
       )}
     </div>

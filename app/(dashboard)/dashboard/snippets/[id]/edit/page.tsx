@@ -34,14 +34,12 @@ export default async function EditSnippetPage({
       <div className="mb-8">
         <Link
           href={`/dashboard/snippets/${snippet.id}`}
-          className="text-sm text-gray-500 hover:text-gray-900 transition mb-2 block"
+          className="text-xs text-white/30 hover:text-white transition mb-3 block"
         >
-          ← Back to Snippet
+          ← back to snippet
         </Link>
-        <h2 className="text-2xl font-bold text-gray-900">Edit Snippet</h2>
-        <p className="text-gray-500 text-sm mt-1">
-          Update your code snippet
-        </p>
+        <h2 className="text-lg font-mono text-white">edit snippet</h2>
+        <p className="text-white/30 text-xs mt-1">update your code snippet</p>
       </div>
       <EditSnippetForm snippet={snippet} />
     </div>

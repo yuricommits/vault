@@ -1,44 +1,271 @@
 @import "tailwindcss";
-@import "prismjs/themes/prism-tomorrow.css";
 
 @theme {
-    --font-sans: var(--font-geist-mono);
-    --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-geist-mono), 'Fira Code', ui-monospace, monospace;
+
+  --color-bg: var(--bg);
+  --color-bg-1: var(--bg-1);
+  --color-bg-2: var(--bg-2);
+  --color-bg-3: var(--bg-3);
+  --color-border: var(--border);
+  --color-border-2: var(--border-2);
+  --color-border-3: var(--border-3);
+
+  --color-text-1: var(--text-1);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-text-4: var(--text-4);
+
+  --color-green: var(--green);
+  --color-green-dim: var(--green-dim);
+  --color-green-border: var(--green-border);
+
+  --color-white: var(--white);
+
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+}
+
+:root {
+  --font-mono: var(--font-geist-mono), 'Fira Code', ui-monospace, monospace;
+
+  --bg: #09090b;
+  --bg-1: #111113;
+  --bg-2: #18181b;
+  --bg-3: #1c1c1f;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-2: rgba(255, 255, 255, 0.12);
+  --border-3: rgba(255, 255, 255, 0.18);
+
+  --text-1: #fafafa;
+  --text-2: #a1a1aa;
+  --text-3: #71717a;
+  --text-4: #52525b;
+
+  --green: #4ade80;
+  --green-dim: rgba(74, 222, 128, 0.12);
+  --green-border: rgba(74, 222, 128, 0.25);
+
+  --white: #ffffff;
+
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --r-xl: 20px;
+
+  --t: 0.18s ease;
+  --t-slow: 0.35s ease;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
-    background: #000000;
-    color: #ffffff;
-    font-family: var(--font-geist-mono), monospace;
-    font-size: 15px;
-    -webkit-font-smoothing: antialiased;
+  background: var(--bg);
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-input,
-textarea,
-select,
-button,
-a {
-    outline: none !important;
-    box-shadow: none !important;
-    border-radius: 2px;
+input, textarea, select, button, a {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-input,
-textarea,
-select {
-    color: #ffffff;
-    background: #0d0d0d;
-    border: 1px solid #222222;
-    font-family: var(--font-geist-mono), monospace;
-    font-size: 14px;
+input, textarea, select {
+  color: var(--text-1);
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
 }
 
-input::placeholder,
-textarea::placeholder {
-    color: #555555;
+input::placeholder, textarea::placeholder {
+  color: var(--text-4);
 }
 
-* {
-    box-sizing: border-box;
+* { box-sizing: border-box; }
+
+/* ── Grid Background ─────────────────────────────────── */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+}
+
+/* ── Container ───────────────────────────────────────── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+section {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Tag / Pill ──────────────────────────────────────── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: var(--r-xs);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-2);
+  color: var(--text-3);
+  font-family: var(--font-mono);
+}
+
+.tag.green {
+  background: var(--green-dim);
+  border-color: var(--green-border);
+  color: var(--green);
+}
+
+.tag .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: blink 2.5s infinite;
+}
+
+/* ── Buttons ─────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--t);
+  text-decoration: none;
+  border: none;
+  white-space: nowrap;
+  letter-spacing: -0.1px;
+}
+
+.btn-solid {
+  background: var(--white);
+  color: #09090b;
+}
+
+.btn-solid:hover { background: #e4e4e7; }
+
+.btn-outline {
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid var(--border-2);
+}
+
+.btn-outline:hover {
+  background: var(--bg-2);
+  color: var(--text-1);
+  border-color: var(--border-3);
+}
+
+/* ── Typography helpers ──────────────────────────────── */
+.label {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+}
+
+.heading {
+  font-size: clamp(26px, 3.5vw, 44px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  color: var(--text-1);
+  font-family: var(--font-mono);
+}
+
+.subtext {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.75;
+  max-width: 520px;
+}
+
+/* ── Grid card ───────────────────────────────────────── */
+.grid-card {
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  padding: 24px;
+  transition: border-color var(--t), background var(--t);
+}
+
+.grid-card:hover {
+  border-color: var(--border-2);
+  background: var(--bg-2);
+}
+
+/* ── Code ────────────────────────────────────────────── */
+code, pre {
+  font-family: var(--font-mono);
+}
+
+/* ── Scrollbar ───────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--bg-3);
+  border-radius: 3px;
+}
+
+/* ── Animations ──────────────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Grid override (more visible) ───────────────────── */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 100% 80% at 50% 0%, black 30%, transparent 100%);
 }

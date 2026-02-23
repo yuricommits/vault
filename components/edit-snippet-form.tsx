@@ -2,20 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/toast";
+import TagManager from "@/components/tag-manager";
 
 const LANGUAGES = [
-  "javascript",
-  "typescript",
-  "python",
-  "rust",
-  "go",
-  "java",
-  "css",
-  "html",
-  "bash",
-  "sql",
-  "json",
-  "markdown",
+  "javascript", "typescript", "python", "rust", "go", "java",
+  "css", "html", "bash", "sql", "json", "markdown",
 ];
 
 interface Snippet {
@@ -28,11 +20,14 @@ interface Snippet {
 
 export default function EditSnippetForm({ snippet }: { snippet: Snippet }) {
   const router = useRouter();
+  const { toast } = useToast();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
-  const inputClass = "w-full px-3 py-2 bg-black border border-white/10 text-sm text-white placeholder-white/30 focus:border-white/20 transition";
+  const inputClass =
+    "w-full px-3 py-2 bg-[#111111] border border-[#1f1f1f] text-sm text-white placeholder-[#444444] focus:border-[#333333] transition outline-none";
 
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,15 +50,16 @@ export default function EditSnippetForm({ snippet }: { snippet: Snippet }) {
 
     if (!res.ok) {
       setError(data.message);
+      toast(data.message || "failed to save changes", "error");
       setLoading(false);
       return;
     }
 
+    toast("changes saved");
     router.push(`/dashboard/snippets/${snippet.id}`);
   }
 
   async function handleDelete() {
-    if (!confirm("Are you sure you want to delete this snippet?")) return;
     setDeleting(true);
 
     const res = await fetch(`/api/snippets/${snippet.id}`, {
@@ -71,30 +67,33 @@ export default function EditSnippetForm({ snippet }: { snippet: Snippet }) {
     });
 
     if (!res.ok) {
+      toast("failed to delete snippet", "error");
       setDeleting(false);
+      setConfirmDelete(false);
       return;
     }
 
+    toast("snippet deleted");
     router.push("/dashboard");
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label className="block text-xs text-white/40 mb-2">title</label>
+        <label className="block text-xs text-[#666666] mb-2">title</label>
         <input name="title" type="text" required defaultValue={snippet.title} className={inputClass} />
       </div>
 
       <div>
-        <label className="block text-xs text-white/40 mb-2">description</label>
+        <label className="block text-xs text-[#666666] mb-2">description</label>
         <input name="description" type="text" defaultValue={snippet.description ?? ""} className={inputClass} />
       </div>
 
       <div>
-        <label className="block text-xs text-white/40 mb-2">language</label>
+        <label className="block text-xs text-[#666666] mb-2">language</label>
         <select name="language" required defaultValue={snippet.language} className={inputClass}>
           {LANGUAGES.map((lang) => (
-            <option key={lang} value={lang} className="bg-black">
+            <option key={lang} value={lang} className="bg-[#111111]">
               {lang}
             </option>
           ))}
@@ -102,7 +101,7 @@ export default function EditSnippetForm({ snippet }: { snippet: Snippet }) {
       </div>
 
       <div>
-        <label className="block text-xs text-white/40 mb-2">code</label>
+        <label className="block text-xs text-[#666666] mb-2">code</label>
         <textarea
           name="code"
           required
@@ -110,6 +109,10 @@ export default function EditSnippetForm({ snippet }: { snippet: Snippet }) {
           defaultValue={snippet.code}
           className={`${inputClass} font-mono`}
         />
+      </div>
+
+      <div className="border-t border-white/5 pt-6">
+        <TagManager snippetId={snippet.id} />
       </div>
 
       {error && <p className="text-red-400 text-xs">{error}</p>}
@@ -131,14 +134,37 @@ export default function EditSnippetForm({ snippet }: { snippet: Snippet }) {
             cancel
           </button>
         </div>
-        <button
-          type="button"
-          onClick={handleDelete}
-          disabled={deleting}
-          className="text-xs text-red-400 hover:text-red-300 disabled:opacity-50 transition"
-        >
-          {deleting ? "deleting..." : "delete snippet"}
-        </button>
+
+        <div className="flex items-center gap-3">
+          {confirmDelete ? (
+            <>
+              <span className="text-xs text-white/30">are you sure?</span>
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="text-xs text-red-400 hover:text-red-300 disabled:opacity-50 transition"
+              >
+                {deleting ? "deleting..." : "yes, delete"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmDelete(false)}
+                className="text-xs text-white/30 hover:text-white transition"
+              >
+                cancel
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmDelete(true)}
+              className="text-xs text-white/20 hover:text-red-400 transition"
+            >
+              delete
+            </button>
+          )}
+        </div>
       </div>
     </form>
   );

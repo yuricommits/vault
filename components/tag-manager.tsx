@@ -74,13 +74,15 @@ export default function TagManager({ snippetId }: { snippetId: string }) {
     (tag) => !snippetTags.some((st) => st.id === tag.id)
   );
 
+  const inputClass = "px-3 py-2 bg-[#111111] border border-[#1f1f1f] text-sm text-white placeholder-[#444444] focus:border-[#333333] transition outline-none";
+
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-sm font-medium text-gray-700 mb-2">Tags</p>
+        <p className="text-xs text-[#666666] mb-2">tags</p>
         <div className="flex flex-wrap gap-2 min-h-6">
           {snippetTags.length === 0 ? (
-            <p className="text-xs text-gray-400">No tags yet</p>
+            <p className="text-xs text-white/20">no tags yet</p>
           ) : (
             snippetTags.map((tag) => (
               <TagBadge
@@ -95,13 +97,13 @@ export default function TagManager({ snippetId }: { snippetId: string }) {
 
       {unassignedTags.length > 0 && (
         <div>
-          <p className="text-xs text-gray-500 mb-2">Add existing tag</p>
+          <p className="text-xs text-[#666666] mb-2">add existing tag</p>
           <div className="flex flex-wrap gap-2">
             {unassignedTags.map((tag) => (
               <button
                 key={tag.id}
                 onClick={() => handleAddTag(tag.id)}
-                className="text-xs bg-white border border-gray-300 text-gray-600 px-2 py-1 rounded-md hover:bg-gray-50 transition"
+                className="text-xs border border-white/10 text-white/40 px-2 py-1 hover:text-white hover:border-white/30 transition font-mono"
               >
                 + {tag.name}
               </button>
@@ -116,15 +118,15 @@ export default function TagManager({ snippetId }: { snippetId: string }) {
           value={newTag}
           onChange={(e) => setNewTag(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleCreateTag()}
-          placeholder="Create new tag..."
-          className="flex-1 px-3 py-1.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black"
+          placeholder="create new tag..."
+          className={`flex-1 ${inputClass} font-mono`}
         />
         <button
           onClick={handleCreateTag}
           disabled={loading || !newTag.trim()}
-          className="bg-black text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition"
+          className="text-xs text-black bg-white px-4 py-2 hover:bg-[#ededed] disabled:opacity-50 transition font-medium"
         >
-          Add
+          add
         </button>
       </div>
     </div>

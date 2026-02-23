@@ -6,7 +6,14 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import CopyButton from "@/components/copy-button";
 import CodeBlock from "@/components/code-block";
-import TagManager from "@/components/tag-manager";
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
 export default async function SnippetPage({
   params,
@@ -33,40 +40,44 @@ export default async function SnippetPage({
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <Link
-            href="/dashboard"
-            className="text-xs text-white/40 hover:text-white transition mb-3 block"
-          >
-            ← back
-          </Link>
-          <p className="text-xs text-white/40 mb-1">// SNIPPET</p>
-          <h2 className="text-xl text-white font-bold">{snippet.title}</h2>
-          {snippet.description && (
-            <p className="text-sm text-white/40 mt-1">{snippet.description}</p>
-          )}
-        </div>
-        <div className="flex items-center gap-3 mt-6">
-          <span className="text-xs text-white/40 border border-white/10 px-2 py-1 font-mono">
-            {snippet.language}
-          </span>
-          <CopyButton code={snippet.code} />
-          <Link
-            href={`/dashboard/snippets/${snippet.id}/edit`}
-            className="text-xs text-black bg-white px-3 py-1.5 hover:bg-white/90 transition font-medium"
-          >
-            edit
-          </Link>
+      <div className="mb-8">
+        <Link
+          href="/dashboard"
+          className="text-[10px] tracking-widest text-white/20 hover:text-white/50 transition mb-6 block"
+        >
+          ← SNIPPETS
+        </Link>
+
+        <div className="flex items-start justify-between gap-6">
+          <div className="min-w-0">
+            <h2 className="text-xl font-mono text-white leading-snug">{snippet.title}</h2>
+            {snippet.description && (
+              <p className="text-sm text-white/30 mt-2">{snippet.description}</p>
+            )}
+            <div className="flex items-center gap-4 mt-3">
+              <span className="text-[10px] font-mono text-white/20 border border-white/10 px-1.5 py-0.5">
+                {snippet.language}
+              </span>
+              <span className="text-[10px] text-white/15 font-mono">
+                {formatDate(new Date(snippet.createdAt))}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0 mt-1">
+            <CopyButton code={snippet.code} />
+            <Link
+              href={`/dashboard/snippets/${snippet.id}/edit`}
+              className="text-xs text-black bg-white px-3 py-1.5 hover:bg-white/90 transition font-medium"
+            >
+              edit
+            </Link>
+          </div>
         </div>
       </div>
 
-      <div className="border border-white/10 overflow-hidden mb-6">
+      <div className="border border-white/10 overflow-hidden">
         <CodeBlock code={snippet.code} language={snippet.language} />
-      </div>
-
-      <div className="border border-white/10 p-6">
-        <TagManager snippetId={snippet.id} />
       </div>
     </div>
   );

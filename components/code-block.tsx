@@ -1,39 +1,39 @@
-"use client";
+import { codeToHtml } from "shiki";
 
-import { useEffect, useRef } from "react";
-import Prism from "prismjs";
-import "prismjs/components/prism-typescript";
-import "prismjs/components/prism-javascript";
-import "prismjs/components/prism-python";
-import "prismjs/components/prism-bash";
-import "prismjs/components/prism-sql";
-import "prismjs/components/prism-json";
-import "prismjs/components/prism-css";
-import "prismjs/components/prism-rust";
-import "prismjs/components/prism-go";
-import "prismjs/components/prism-java";
-import "prismjs/components/prism-markup";
+const LANGUAGE_MAP: Record<string, string> = {
+  javascript: "javascript",
+  typescript: "typescript",
+  python: "python",
+  rust: "rust",
+  go: "go",
+  java: "java",
+  css: "css",
+  html: "html",
+  bash: "bash",
+  sql: "sql",
+  json: "json",
+  markdown: "markdown",
+};
 
-export default function CodeBlock({
+export default async function CodeBlock({
   code,
   language,
 }: {
   code: string;
   language: string;
 }) {
-  const ref = useRef<HTMLElement>(null);
+  const lang = LANGUAGE_MAP[language] ?? "plaintext";
 
-  useEffect(() => {
-    if (ref.current) {
-      Prism.highlightElement(ref.current);
-    }
-  }, [code, language]);
+  const html = await codeToHtml(code, {
+    lang,
+    theme: "vesper",
+  });
 
   return (
-    <pre className="m-0 p-6 overflow-x-auto bg-gray-900 rounded-xl">
-      <code ref={ref} className={`language-${language}`}>
-        {code}
-      </code>
-    </pre>
+    <div
+      className="p-6 overflow-x-auto text-sm leading-relaxed [&>pre]:!bg-transparent [&>pre]:!m-0"
+      style={{ backgroundColor: "#0d0d0d", fontFamily: "var(--font-geist-mono), monospace" }}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
   );
 }

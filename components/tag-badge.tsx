@@ -7,12 +7,12 @@ interface TagBadgeProps {
 
 export default function TagBadge({ name, onRemove }: TagBadgeProps) {
   return (
-    <span className="inline-flex items-center gap-1 bg-gray-100 text-gray-700 px-2 py-1 rounded-md text-xs font-medium">
+    <span className="inline-flex items-center gap-1 bg-white/5 text-white/60 border border-white/10 px-2 py-1 text-xs font-mono">
       {name}
       {onRemove && (
         <button
           onClick={onRemove}
-          className="hover:text-red-500 transition text-gray-400 font-bold"
+          className="hover:text-white transition text-white/30 font-bold"
         >
           ×
         </button>

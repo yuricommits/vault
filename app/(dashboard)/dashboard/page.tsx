@@ -39,15 +39,6 @@ function DashboardPage() {
 
     const fetchSnippets = useCallback(() => {
         fetch("/api/snippets")
-            .then((r) => r.json())
-            .then((data) => {
-                setSnippets(data);
-                setLoading(false);
-            });
-    }, []);
-
-    const fetchSnippets = useCallback(() => {
-        fetch("/api/snippets")
             .then((r) => {
                 console.log("status:", r.status);
                 return r.json();
@@ -62,6 +53,27 @@ function DashboardPage() {
                 setLoading(false);
             });
     }, []);
+
+    // ADD THIS:
+    useEffect(() => {
+        fetchSnippets();
+    }, [fetchSnippets]);
+
+    // ADD THIS:
+    useEffect(() => {
+        if (selectedId) {
+            fetch(`/api/snippets/${selectedId}`)
+                .then((r) => {
+                    if (!r.ok) return null;
+                    return r.json();
+                })
+                .then((data) => {
+                    if (data) setSelected(data);
+                });
+        } else {
+            setTimeout(() => setSelected(null), 0);
+        }
+    }, [selectedId]);
 
     const handleSelect = (snippet: Snippet) => {
         router.push(`/dashboard?s=${snippet.id}`);

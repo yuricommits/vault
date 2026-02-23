@@ -1,5 +1,4 @@
-import { auth } from "@/auth";
-import { signOut } from "@/auth";
+import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import SearchBar from "@/components/search-bar";
@@ -8,47 +7,65 @@ import KeyboardShortcuts from "@/components/keyboard-shortcuts";
 import { ToastProvider } from "@/components/toast";
 
 export default async function DashboardLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  const session = await auth();
+    const session = await auth();
+    if (!session?.user) redirect("/login");
 
-  if (!session?.user) {
-    redirect("/login");
-  }
+    return (
+        <ToastProvider>
+            <div className="min-h-screen bg-bg flex flex-col">
+                <div className="grid-bg" />
+                <KeyboardShortcuts />
 
-  return (
-    <ToastProvider>
-      <div className="min-h-screen bg-black flex flex-col">
-        <KeyboardShortcuts />
-        <nav className="border-b border-white/5 px-6 py-3 flex items-center justify-between">
-          <Link href="/dashboard" className="text-xs font-bold tracking-[0.3em] text-white">
-            VAULT
-          </Link>
-          <div className="flex items-center gap-4">
-            <SearchBar />
-            <form action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/login" });
-            }}>
-              <button type="submit" className="text-xs text-white/30 hover:text-white transition">
-                sign out
-              </button>
-            </form>
-          </div>
-        </nav>
+                {/* Top nav */}
+                <nav className="relative z-10 border-b border-border px-[24px] flex items-center h-[56px] gap-[16px]">
+                    <Link
+                        href="/dashboard"
+                        className="flex items-center gap-[7px] text-[13px] font-semibold text-text-1 tracking-[-0.3px] flex-shrink-0"
+                    >
+                        <span className="text-[16px] text-text-3">◈</span>
+                        vault
+                    </Link>
 
-        <div className="flex flex-1">
-          <aside className="w-48 border-r border-white/5 flex flex-col">
-            <SidebarNav />
-          </aside>
+                    <div className="flex-1 max-w-[380px]">
+                        <SearchBar />
+                    </div>
 
-          <main className="flex-1 px-8 py-8 max-w-4xl">
-            {children}
-          </main>
-        </div>
-      </div>
-    </ToastProvider>
-  );
+                    <div className="ml-auto flex items-center gap-[16px]">
+                        <span className="text-[11.5px] text-text-4 font-mono">
+                            {session.user.name}
+                        </span>
+                        <form
+                            action={async () => {
+                                "use server";
+                                await signOut({ redirectTo: "/login" });
+                            }}
+                        >
+                            <button
+                                type="submit"
+                                className="text-[11.5px] text-text-4 hover:text-text-1 transition-colors font-mono"
+                            >
+                                sign out
+                            </button>
+                        </form>
+                    </div>
+                </nav>
+
+                <div className="relative z-10 flex flex-1">
+                    {/* Sidebar */}
+                    <aside className="w-[192px] border-r border-border flex flex-col flex-shrink-0">
+                        <SidebarNav />
+                    </aside>
+
+                    {/* Main */}
+                    <main className="flex-1 px-[48px] py-[40px]">
+                        {children}
+                    </main>
+                </div>
+            </div>
+        </ToastProvider>
+    );
 }

@@ -5,6 +5,7 @@ import Hero from "@/components/landing/hero";
 import Features from "@/components/landing/features";
 import HowItWorks from "@/components/landing/how-it-works";
 import AIShowcase from "@/components/landing/ai-showcase";
+import Changelog from "@/components/landing/changelog";
 import Footer from "@/components/landing/footer";
 
 export default async function HomePage() {
@@ -21,6 +22,7 @@ export default async function HomePage() {
             <Features />
             <HowItWorks />
             <AIShowcase />
+            <Changelog />
             <Footer />
         </main>
     );

@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# vault
+
+A personal, web-based code snippet manager with AI enhancement powered by Claude.
+
+## Features
+
+- Save snippets with title, description, and language
+- Full-text search across titles and descriptions
+- Tag and organize snippets
+- Syntax highlighting via Shiki
+- One-click copy to clipboard
+- AI enhancement — paste raw code, Claude generates title, description, tags, and improved code
+- Keyboard shortcuts (N, /, Esc)
+- Private by default — auth required
+
+## Tech Stack
+
+- [Next.js](https://nextjs.org) — framework
+- [Drizzle ORM](https://orm.drizzle.team) + [Neon](https://neon.tech) — database
+- [Auth.js](https://authjs.dev) — authentication
+- [Shiki](https://shiki.style) — syntax highlighting
+- [Anthropic SDK](https://github.com/anthropic-ai/anthropic-sdk-typescript) — AI enhancement
+- Deployed on [Vercel](https://vercel.com)
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the repo
 
-```bash
+\`\`\`bash
+git clone https://github.com/yuricommits/vault
+cd vault
+\`\`\`
+
+### 2. Install dependencies
+
+\`\`\`bash
+npm install
+\`\`\`
+
+### 3. Set up environment variables
+
+\`\`\`bash
+cp .env.example .env.local
+\`\`\`
+
+Fill in `.env.local`:
+
+\`\`\`
+DATABASE_URL=        # Neon Postgres connection string
+AUTH_SECRET=         # Random secret for Auth.js (run: openssl rand -base64 32)
+GITHUB_TOKEN=        # GitHub token with repo read access (for changelog)
+\`\`\`
+
+### 4. Push the database schema
+
+\`\`\`bash
+npx drizzle-kit push
+\`\`\`
+
+### 5. Run the dev server
+
+\`\`\`bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+\`\`\`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## AI Enhancement
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Vault uses the Anthropic API for AI-powered snippet enhancement. Each user brings their own Anthropic API key — add it in **Settings** after signing in. Get a key at [console.anthropic.com](https://console.anthropic.com/settings/keys).
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Pull requests are welcome. For major changes, open an issue first.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

@@ -16,6 +16,7 @@ export const users = pgTable("users", {
     name: varchar("name", { length: 100 }).notNull(),
     email: varchar("email", { length: 255 }).notNull().unique(),
     passwordHash: text("password_hash"),
+    anthropicKey: text("anthropic_key"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -93,17 +94,3 @@ export const sessions = pgTable("sessions", {
     sessionToken: text("session_token").notNull().unique(),
     expires: timestamp("expires").notNull(),
 });
-
-// ─── AI Usage ─────────────────────────────────────────────
-export const aiUsage = pgTable(
-    "ai_usage",
-    {
-        id: uuid("id").defaultRandom().primaryKey(),
-        userId: uuid("user_id")
-            .notNull()
-            .references(() => users.id, { onDelete: "cascade" }),
-        date: varchar("date", { length: 10 }).notNull(), // YYYY-MM-DD
-        count: integer("count").default(0).notNull(),
-    },
-    (table) => [unique().on(table.userId, table.date)],
-);

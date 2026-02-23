@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Github } from "lucide-react";
 
 const COLS = [
     {
@@ -81,9 +82,20 @@ export default function Footer() {
                     <span className="text-[11px] text-text-4">
                         © {new Date().getFullYear()} vault
                     </span>
-                    <span className="text-[11px] text-text-4">
-                        built with Next.js · deployed on Vercel · AI by Claude
-                    </span>
+                    <div className="flex items-center gap-[12px]">
+                        <a
+                            href="https://github.com/yuricommits/vault"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-text-4 hover:text-text-2 transition-colors"
+                        >
+                            <Github size={14} />
+                        </a>
+                        <span className="text-[11px] text-text-4">
+                            MIT license · built with Next.js · deployed on
+                            Vercel
+                        </span>
+                    </div>
                 </div>
             </div>
         </footer>

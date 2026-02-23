@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Plus } from "lucide-react";
@@ -27,7 +27,7 @@ interface Snippet {
     createdAt: string;
 }
 
-export default function DashboardPage() {
+function DashboardPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const selectedId = searchParams.get("s");
@@ -37,24 +37,27 @@ export default function DashboardPage() {
     const [showPromo, setShowPromo] = useState(true);
     const [loading, setLoading] = useState(true);
 
-    const fetchSnippets = useCallback(async () => {
-        const res = await fetch("/api/snippets");
-        const data = await res.json();
-        setSnippets(data);
-        setLoading(false);
+    const fetchSnippets = useCallback(() => {
+        fetch("/api/snippets")
+            .then((r) => r.json())
+            .then((data) => {
+                setSnippets(data);
+                setLoading(false);
+            });
     }, []);
-
-    useEffect(() => {
-        fetchSnippets();
-    }, [fetchSnippets]);
 
     useEffect(() => {
         if (selectedId) {
             fetch(`/api/snippets/${selectedId}`)
-                .then((r) => r.json())
-                .then((data) => setSelected(data));
+                .then((r) => {
+                    if (!r.ok) return null;
+                    return r.json();
+                })
+                .then((data) => {
+                    if (data) setSelected(data);
+                });
         } else {
-            setSelected(null);
+            setTimeout(() => setSelected(null), 0);
         }
     }, [selectedId]);
 
@@ -94,11 +97,10 @@ export default function DashboardPage() {
 
     return (
         <div className="flex h-full gap-0">
-            {/* Left pane — snippet list */}
+            {/* Left pane */}
             <div
                 className={`flex flex-col flex-shrink-0 ${showRightPane ? "w-[300px] border-r border-border" : "flex-1"}`}
             >
-                {/* Header */}
                 <div className="flex items-center justify-between px-[20px] py-[16px] border-b border-border">
                     <div>
                         <span className="label block mb-[4px]">
@@ -118,7 +120,6 @@ export default function DashboardPage() {
                     </Link>
                 </div>
 
-                {/* List */}
                 <div className="flex-1 overflow-y-auto">
                     {loading ? (
                         <div className="flex items-center justify-center py-[60px] text-[12px] text-text-4 font-mono">
@@ -194,5 +195,19 @@ export default function DashboardPage() {
                 </div>
             ) : null}
         </div>
+    );
+}
+
+export default function Page() {
+    return (
+        <Suspense
+            fallback={
+                <div className="p-8 text-text-4 font-mono text-[12px]">
+                    loading...
+                </div>
+            }
+        >
+            <DashboardPage />
+        </Suspense>
     );
 }

@@ -26,42 +26,42 @@ A personal, web-based code snippet manager with AI enhancement powered by Claude
 
 ### 1. Clone the repo
 
-\`\`\`bash
+```bash
 git clone https://github.com/yuricommits/vault
 cd vault
-\`\`\`
+```
 
 ### 2. Install dependencies
 
-\`\`\`bash
+```bash
 npm install
-\`\`\`
+```
 
 ### 3. Set up environment variables
 
-\`\`\`bash
+```bash
 cp .env.example .env.local
-\`\`\`
+```
 
 Fill in `.env.local`:
 
-\`\`\`
+```
 DATABASE_URL=        # Neon Postgres connection string
 AUTH_SECRET=         # Random secret for Auth.js (run: openssl rand -base64 32)
 GITHUB_TOKEN=        # GitHub token with repo read access (for changelog)
-\`\`\`
+```
 
 ### 4. Push the database schema
 
-\`\`\`bash
+```bash
 npx drizzle-kit push
-\`\`\`
+```
 
 ### 5. Run the dev server
 
-\`\`\`bash
+```bash
 npm run dev
-\`\`\`
+```
 
 Open [http://localhost:3000](http://localhost:3000).
 

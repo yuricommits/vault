@@ -46,20 +46,22 @@ function DashboardPage() {
             });
     }, []);
 
-    useEffect(() => {
-        if (selectedId) {
-            fetch(`/api/snippets/${selectedId}`)
-                .then((r) => {
-                    if (!r.ok) return null;
-                    return r.json();
-                })
-                .then((data) => {
-                    if (data) setSelected(data);
-                });
-        } else {
-            setTimeout(() => setSelected(null), 0);
-        }
-    }, [selectedId]);
+    const fetchSnippets = useCallback(() => {
+        fetch("/api/snippets")
+            .then((r) => {
+                console.log("status:", r.status);
+                return r.json();
+            })
+            .then((data) => {
+                console.log("data:", data);
+                setSnippets(Array.isArray(data) ? data : []);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error("fetch error:", err);
+                setLoading(false);
+            });
+    }, []);
 
     const handleSelect = (snippet: Snippet) => {
         router.push(`/dashboard?s=${snippet.id}`);

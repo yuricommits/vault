@@ -85,7 +85,7 @@ export default async function Changelog() {
         <section className="py-[100px] border-t border-border" id="changelog">
             <div className="container">
                 <div className="mb-[48px] flex flex-col gap-[14px]">
-                    <span className="label">// changelog</span>
+                    <span className="label">{"// changelog"}</span>
                     <h2 className="heading mt-[10px]">Shipping in the open.</h2>
                     <p className="subtext">
                         Every commit, every fix, every feature — tracked as it

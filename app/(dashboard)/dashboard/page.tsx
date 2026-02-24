@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { Plus } from "lucide-react";
 import SnippetDetail from "@/components/dashboard/snippet-detail";
 import AIPromo from "@/components/dashboard/ai-promo";
+import NewSnippetPane from "@/components/dashboard/new-snippet-pane";
 
 function timeAgo(date: Date) {
     const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
@@ -36,63 +36,71 @@ function DashboardPage() {
     const [selected, setSelected] = useState<Snippet | null>(null);
     const [showPromo, setShowPromo] = useState(true);
     const [loading, setLoading] = useState(true);
+    const [creating, setCreating] = useState(false);
 
     const fetchSnippets = useCallback(() => {
         fetch("/api/snippets")
-            .then((r) => {
-                console.log("status:", r.status);
-                return r.json();
-            })
+            .then((r) => r.json())
             .then((data) => {
-                console.log("data:", data);
                 setSnippets(Array.isArray(data) ? data : []);
                 setLoading(false);
             })
-            .catch((err) => {
-                console.error("fetch error:", err);
-                setLoading(false);
-            });
+            .catch(() => setLoading(false));
     }, []);
 
-    // ADD THIS:
     useEffect(() => {
-        if (selectedId) {
-            if (selected?.id === selectedId) return;
-            fetch(`/api/snippets/${selectedId}`)
-                .then((r) => {
-                    if (!r.ok) return null;
-                    return r.json();
-                })
-                .then((data) => {
-                    if (data) setSelected(data);
-                });
-        } else {
-            setTimeout(() => setSelected(null), 0);
+        fetchSnippets();
+    }, [fetchSnippets]);
+
+    useEffect(() => {
+        if (!selectedId) {
+            setSelected(null);
+            return;
         }
-    }, [selectedId, selected?.id]);
+        if (selected?.id === selectedId) return;
+        if (!loading) {
+            const local = snippets.find((s) => s.id === selectedId);
+            if (local) {
+                setSelected(local);
+                return;
+            }
+        }
+        fetch(`/api/snippets/${selectedId}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((data) => {
+                if (data) setSelected(data);
+            });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedId, loading]);
 
     const handleSelect = (snippet: Snippet) => {
         setSelected(snippet);
+        setCreating(false);
         setShowPromo(false);
         router.push(`/dashboard?s=${snippet.id}`);
     };
 
     const handleClose = () => {
-        router.push("/dashboard");
         setSelected(null);
+        setShowPromo(true);
+        router.push("/dashboard");
     };
 
     const handleDelete = async () => {
         if (!selected) return;
         await fetch(`/api/snippets/${selected.id}`, { method: "DELETE" });
-        router.push("/dashboard");
         setSelected(null);
+        setShowPromo(true);
+        router.push("/dashboard");
         fetchSnippets();
     };
 
-    useEffect(() => {
-        fetchSnippets();
-    }, [fetchSnippets]);
+    const handleCreated = (snippet: Snippet) => {
+        setSnippets((prev) => [snippet, ...prev]);
+        setCreating(false);
+        setSelected(snippet);
+        router.push(`/dashboard?s=${snippet.id}`);
+    };
 
     const handleSave = async (updates: Partial<Snippet>) => {
         if (!selected) return;
@@ -101,20 +109,20 @@ function DashboardPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updates),
         });
-        const updated = { ...selected, ...updates };
-        setSelected(updated as Snippet);
+        const updated = { ...selected, ...updates } as Snippet;
+        setSelected(updated);
         setSnippets((prev) =>
-            prev.map((s) => (s.id === updated.id ? (updated as Snippet) : s)),
+            prev.map((s) => (s.id === updated.id ? updated : s)),
         );
     };
 
-    const showRightPane = selected || (showPromo && !selectedId);
+    const showRightPane = selected || creating || showPromo;
 
     return (
-        <div className="flex h-full gap-0">
+        <div className="flex h-full gap-6 overflow-hidden">
             {/* Left pane */}
             <div
-                className={`flex flex-col flex-shrink-0 ${showRightPane ? "w-[300px] border-r border-border" : "flex-1"}`}
+                className={`flex flex-col flex-shrink-0 overflow-hidden ${showRightPane ? "w-[300px] border-r border-border" : "flex-1"}`}
             >
                 <div className="flex items-center justify-between px-[20px] py-[16px] border-b border-border">
                     <div>
@@ -127,12 +135,17 @@ function DashboardPage() {
                                 : `${snippets.length} snippet${snippets.length === 1 ? "" : "s"}`}
                         </h1>
                     </div>
-                    <Link
-                        href="/dashboard/snippets/new"
+                    <button
+                        onClick={() => {
+                            setCreating(true);
+                            setSelected(null);
+                            setShowPromo(false);
+                            router.push("/dashboard");
+                        }}
                         className="btn btn-solid text-[11.5px] px-[12px] py-[7px]"
                     >
                         <Plus size={12} /> new
-                    </Link>
+                    </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto">
@@ -148,12 +161,16 @@ function DashboardPage() {
                             <p className="text-[12px] text-text-4 font-mono">
                                 your vault is empty
                             </p>
-                            <Link
-                                href="/dashboard/snippets/new"
+                            <button
+                                onClick={() => {
+                                    setCreating(true);
+                                    setShowPromo(false);
+                                    router.push("/dashboard");
+                                }}
                                 className="btn btn-solid text-[11.5px]"
                             >
                                 + new snippet
-                            </Link>
+                            </button>
                         </div>
                     ) : (
                         <div>
@@ -177,14 +194,16 @@ function DashboardPage() {
                                             )}
                                         </span>
                                     </div>
-                                    <div className="flex items-center gap-[6px]">
-                                        <span className="text-[9.5px] font-mono text-text-4 border border-border px-[5px] py-[1px] rounded-xs bg-bg-2">
+                                    <div className="flex items-center gap-[6px] overflow-hidden">
+                                        <span className="text-[9.5px] font-mono text-text-4 border border-border px-[5px] py-[1px] rounded-xs bg-bg-2 flex-shrink-0">
                                             {snippet.language}
                                         </span>
                                         {snippet.description && (
-                                            <span className="text-[11px] text-text-4 truncate">
-                                                {snippet.description}
-                                            </span>
+                                            <div className="min-w-0 flex-1 overflow-hidden">
+                                                <span className="text-[11px] text-text-4 block truncate">
+                                                    {snippet.description}
+                                                </span>
+                                            </div>
                                         )}
                                     </div>
                                 </button>
@@ -196,16 +215,27 @@ function DashboardPage() {
 
             {/* Right pane */}
             {selected ? (
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 w-0 overflow-hidden">
                     <SnippetDetail
+                        key={selected.id}
                         snippet={selected}
                         onClose={handleClose}
                         onDeleteAction={handleDelete}
                         onSaveAction={handleSave}
                     />
                 </div>
-            ) : showPromo && !selectedId ? (
-                <div className="flex-1 overflow-y-auto">
+            ) : creating ? (
+                <div className="flex-1 w-0 overflow-hidden">
+                    <NewSnippetPane
+                        onClose={() => {
+                            setCreating(false);
+                            setShowPromo(true);
+                        }}
+                        onCreated={handleCreated}
+                    />
+                </div>
+            ) : showPromo ? (
+                <div className="flex-1 w-0 overflow-hidden">
                     <AIPromo onClose={() => setShowPromo(false)} />
                 </div>
             ) : null}

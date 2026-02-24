@@ -94,3 +94,15 @@ export const sessions = pgTable("sessions", {
     sessionToken: text("session_token").notNull().unique(),
     expires: timestamp("expires").notNull(),
 });
+
+// ─── CLI (token) ──────────────────────────────────
+export const cliTokens = pgTable("cli_tokens", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    token: text("token").notNull().unique(), // stored as SHA-256 hash
+    name: varchar("name", { length: 100 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    lastUsedAt: timestamp("last_used_at"),
+});

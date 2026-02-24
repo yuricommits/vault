@@ -1,22 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { snippets } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 
 export async function PATCH(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> },
 ) {
     try {
-        const session = await auth();
-
-        if (!session?.user?.id) {
+        const user = await getAuthenticatedUser(req);
+        if (!user)
             return NextResponse.json(
                 { message: "Unauthorized" },
                 { status: 401 },
             );
-        }
 
         const { id } = await params;
         const { title, description, code, language } = await req.json();
@@ -30,24 +28,15 @@ export async function PATCH(
 
         const [updated] = await db
             .update(snippets)
-            .set({
-                title,
-                description,
-                code,
-                language,
-                updatedAt: new Date(),
-            })
-            .where(
-                and(eq(snippets.id, id), eq(snippets.userId, session.user.id)),
-            )
+            .set({ title, description, code, language, updatedAt: new Date() })
+            .where(and(eq(snippets.id, id), eq(snippets.userId, user.id)))
             .returning();
 
-        if (!updated) {
+        if (!updated)
             return NextResponse.json(
                 { message: "Snippet not found" },
                 { status: 404 },
             );
-        }
 
         return NextResponse.json(updated);
     } catch (error) {
@@ -64,22 +53,18 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> },
 ) {
     try {
-        const session = await auth();
-
-        if (!session?.user?.id) {
+        const user = await getAuthenticatedUser(req);
+        if (!user)
             return NextResponse.json(
                 { message: "Unauthorized" },
                 { status: 401 },
             );
-        }
 
         const { id } = await params;
 
         await db
             .delete(snippets)
-            .where(
-                and(eq(snippets.id, id), eq(snippets.userId, session.user.id)),
-            );
+            .where(and(eq(snippets.id, id), eq(snippets.userId, user.id)));
 
         return NextResponse.json({ message: "Deleted successfully" });
     } catch (error) {
@@ -96,31 +81,26 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> },
 ) {
     try {
-        const session = await auth();
-
-        if (!session?.user?.id) {
+        const user = await getAuthenticatedUser(req);
+        if (!user)
             return NextResponse.json(
                 { message: "Unauthorized" },
                 { status: 401 },
             );
-        }
 
         const { id } = await params;
 
         const [snippet] = await db
             .select()
             .from(snippets)
-            .where(
-                and(eq(snippets.id, id), eq(snippets.userId, session.user.id)),
-            )
+            .where(and(eq(snippets.id, id), eq(snippets.userId, user.id)))
             .limit(1);
 
-        if (!snippet) {
+        if (!snippet)
             return NextResponse.json(
                 { message: "Snippet not found" },
                 { status: 404 },
             );
-        }
 
         return NextResponse.json(snippet);
     } catch (error) {

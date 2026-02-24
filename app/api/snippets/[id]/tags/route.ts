@@ -1,32 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { snippets } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { getAuthenticatedUser } from "@/lib/auth-helpers";
 
 export async function GET(
-    _req: NextRequest,
+    req: NextRequest,
     { params }: { params: Promise<{ id: string }> },
 ) {
     try {
-        const session = await auth();
-        if (!session?.user?.id) {
+        const user = await getAuthenticatedUser(req);
+        if (!user)
             return NextResponse.json(
                 { message: "Unauthorized" },
                 { status: 401 },
             );
-        }
+
         const { id } = await params;
         const [snippet] = await db
             .select()
             .from(snippets)
-            .where(
-                and(eq(snippets.id, id), eq(snippets.userId, session.user.id)),
-            )
+            .where(and(eq(snippets.id, id), eq(snippets.userId, user.id)))
             .limit(1);
-        if (!snippet) {
+
+        if (!snippet)
             return NextResponse.json({ message: "Not found" }, { status: 404 });
-        }
+
         return NextResponse.json(snippet);
     } catch (error) {
         console.error("Get snippet error:", error);
@@ -37,15 +36,14 @@ export async function GET(
     }
 }
 
-// ... rest of the file unchanged (PATCH and DELETE stay as they are)
-
 export async function PATCH(
-    req: Request,
+    req: NextRequest,
     { params }: { params: Promise<{ id: string }> },
 ) {
-    const session = await auth();
-    if (!session?.user?.id)
+    const user = await getAuthenticatedUser(req);
+    if (!user)
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const { id } = await params;
     const body = await req.json();
     const [updated] = await db
@@ -56,23 +54,27 @@ export async function PATCH(
             code: body.code,
             language: body.language,
         })
-        .where(and(eq(snippets.id, id), eq(snippets.userId, session.user.id)))
+        .where(and(eq(snippets.id, id), eq(snippets.userId, user.id)))
         .returning();
+
     if (!updated)
         return NextResponse.json({ error: "Not found" }, { status: 404 });
+
     return NextResponse.json(updated);
 }
 
 export async function DELETE(
-    _req: Request,
+    req: NextRequest,
     { params }: { params: Promise<{ id: string }> },
 ) {
-    const session = await auth();
-    if (!session?.user?.id)
+    const user = await getAuthenticatedUser(req);
+    if (!user)
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const { id } = await params;
     await db
         .delete(snippets)
-        .where(and(eq(snippets.id, id), eq(snippets.userId, session.user.id)));
+        .where(and(eq(snippets.id, id), eq(snippets.userId, user.id)));
+
     return NextResponse.json({ success: true });
 }

@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import SnippetDetail from "@/components/dashboard/snippet-detail";
 import AIPromo from "@/components/dashboard/ai-promo";
 import NewSnippetPane from "@/components/dashboard/new-snippet-pane";
@@ -171,7 +172,7 @@ function DashboardPage() {
                     ) : (
                         <div>
                             {snippets.map((snippet, i) => (
-                                <button
+                                <motion.button
                                     key={snippet.id}
                                     onClick={() => handleSelect(snippet)}
                                     className={`w-full text-left px-[20px] py-[14px] flex flex-col gap-[4px] transition-colors duration-[0.18s] border-b border-border cursor-pointer ${
@@ -179,6 +180,12 @@ function DashboardPage() {
                                             ? "bg-bg-2 border-l-2 border-l-white"
                                             : "hover:bg-bg-1 border-l-2 border-l-transparent"
                                     } ${i === snippets.length - 1 ? "border-b-0" : ""}`}
+                                    initial={{ opacity: 0, x: -6 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{
+                                        duration: 0.15,
+                                        delay: i * 0.04,
+                                    }}
                                 >
                                     <div className="flex items-center justify-between gap-[8px]">
                                         <span className="text-[12.5px] text-text-1 font-medium truncate">
@@ -202,7 +209,7 @@ function DashboardPage() {
                                             </div>
                                         )}
                                     </div>
-                                </button>
+                                </motion.button>
                             ))}
                         </div>
                     )}
@@ -210,31 +217,54 @@ function DashboardPage() {
             </div>
 
             {/* Right pane */}
-            {selected ? (
-                <div className="flex-1 w-0 overflow-hidden">
-                    <SnippetDetail
+            <AnimatePresence mode="wait">
+                {selected ? (
+                    <motion.div
                         key={selected.id}
-                        snippet={selected}
-                        onClose={handleClose}
-                        onDeleteAction={handleDelete}
-                        onSaveAction={handleSave}
-                    />
-                </div>
-            ) : creating ? (
-                <div className="flex-1 w-0 overflow-hidden">
-                    <NewSnippetPane
-                        onClose={() => {
-                            setCreating(false);
-                            setShowPromo(true);
-                        }}
-                        onCreated={handleCreated}
-                    />
-                </div>
-            ) : showPromo ? (
-                <div className="flex-1 w-0 overflow-hidden">
-                    <AIPromo onClose={() => setShowPromo(false)} />
-                </div>
-            ) : null}
+                        className="flex-1 w-0 overflow-hidden"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                        <SnippetDetail
+                            key={selected.id}
+                            snippet={selected}
+                            onClose={handleClose}
+                            onDeleteAction={handleDelete}
+                            onSaveAction={handleSave}
+                        />
+                    </motion.div>
+                ) : creating ? (
+                    <motion.div
+                        key="creating"
+                        className="flex-1 w-0 overflow-hidden"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                        <NewSnippetPane
+                            onClose={() => {
+                                setCreating(false);
+                                setShowPromo(true);
+                            }}
+                            onCreated={handleCreated}
+                        />
+                    </motion.div>
+                ) : showPromo ? (
+                    <motion.div
+                        key="promo"
+                        className="flex-1 w-0 overflow-hidden"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                        <AIPromo onClose={() => setShowPromo(false)} />
+                    </motion.div>
+                ) : null}
+            </AnimatePresence>
         </div>
     );
 }

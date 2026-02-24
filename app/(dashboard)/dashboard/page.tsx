@@ -116,14 +116,10 @@ function DashboardPage() {
         );
     };
 
-    const showRightPane = selected || creating || showPromo;
-
     return (
         <div className="flex h-full gap-6 overflow-hidden">
             {/* Left pane */}
-            <div
-                className={`flex flex-col flex-shrink-0 overflow-hidden ${showRightPane ? "w-[300px] border-r border-border" : "flex-1"}`}
-            >
+            <div className="flex flex-col flex-shrink-0 overflow-hidden w-[300px] border-r border-border">
                 <div className="flex items-center justify-between px-[20px] py-[16px] border-b border-border">
                     <div>
                         <span className="label block mb-[4px]">

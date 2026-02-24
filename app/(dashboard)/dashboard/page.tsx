@@ -56,12 +56,8 @@ function DashboardPage() {
 
     // ADD THIS:
     useEffect(() => {
-        fetchSnippets();
-    }, [fetchSnippets]);
-
-    // ADD THIS:
-    useEffect(() => {
         if (selectedId) {
+            if (selected?.id === selectedId) return;
             fetch(`/api/snippets/${selectedId}`)
                 .then((r) => {
                     if (!r.ok) return null;
@@ -73,11 +69,12 @@ function DashboardPage() {
         } else {
             setTimeout(() => setSelected(null), 0);
         }
-    }, [selectedId]);
+    }, [selectedId, selected?.id]);
 
     const handleSelect = (snippet: Snippet) => {
-        router.push(`/dashboard?s=${snippet.id}`);
+        setSelected(snippet);
         setShowPromo(false);
+        router.push(`/dashboard?s=${snippet.id}`);
     };
 
     const handleClose = () => {
@@ -92,6 +89,10 @@ function DashboardPage() {
         setSelected(null);
         fetchSnippets();
     };
+
+    useEffect(() => {
+        fetchSnippets();
+    }, [fetchSnippets]);
 
     const handleSave = async (updates: Partial<Snippet>) => {
         if (!selected) return;
@@ -199,8 +200,8 @@ function DashboardPage() {
                     <SnippetDetail
                         snippet={selected}
                         onClose={handleClose}
-                        onDelete={handleDelete}
-                        onSave={handleSave}
+                        onDeleteAction={handleDelete}
+                        onSaveAction={handleSave}
                     />
                 </div>
             ) : showPromo && !selectedId ? (

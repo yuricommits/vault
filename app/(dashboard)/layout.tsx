@@ -1,9 +1,9 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import SearchBar from "@/components/search-bar";
 import SidebarNav from "@/components/sidebar-nav";
 import KeyboardShortcuts from "@/components/keyboard-shortcuts";
+import SearchPalette from "@/components/search-palette";
 import { ToastProvider } from "@/components/toast";
 
 export default async function DashboardLayout({
@@ -19,6 +19,7 @@ export default async function DashboardLayout({
             <div className="min-h-screen bg-bg flex flex-col">
                 <div className="grid-bg" />
                 <KeyboardShortcuts />
+                <SearchPalette />
 
                 {/* Top nav */}
                 <nav className="relative z-10 border-b border-border px-[24px] flex items-center h-[56px] gap-[16px]">
@@ -29,10 +30,6 @@ export default async function DashboardLayout({
                         <span className="text-[16px] text-text-3">◈</span>
                         vault
                     </Link>
-
-                    <div className="flex-1 max-w-[380px]">
-                        <SearchBar />
-                    </div>
 
                     <div className="ml-auto flex items-center gap-[16px]">
                         <span className="text-[11.5px] text-text-4 font-mono">
@@ -54,14 +51,14 @@ export default async function DashboardLayout({
                     </div>
                 </nav>
 
-                <div className="relative z-10 flex flex-1">
+                <div className="relative z-10 flex flex-1 overflow-hidden">
                     {/* Sidebar */}
-                    <aside className="w-[192px] border-r border-border flex flex-col flex-shrink-0">
+                    <aside className="w-[192px] border-r border-border flex flex-col flex-shrink-0 pl-[8px]">
                         <SidebarNav />
                     </aside>
 
                     {/* Main */}
-                    <main className="flex-1 px-[48px] py-[40px]">
+                    <main className="flex-1 overflow-hidden p-[24px]">
                         {children}
                     </main>
                 </div>

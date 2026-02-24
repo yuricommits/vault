@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { X, Copy, Check, Pencil, Trash2, ChevronLeft } from "lucide-react";
-import CodeBlock from "@/components/code-block";
 
 const LANGUAGES = [
     "javascript",
@@ -38,13 +37,13 @@ function formatDate(date: Date) {
 export default function SnippetDetail({
     snippet,
     onClose,
-    onDelete,
-    onSave,
+    onDeleteAction,
+    onSaveAction,
 }: {
     snippet: Snippet;
     onClose: () => void;
-    onDelete: () => void;
-    onSave: (updates: Partial<Snippet>) => Promise<void>;
+    onDeleteAction: () => void;
+    onSaveAction: (updates: Partial<Snippet>) => Promise<void>;
 }) {
     const [editing, setEditing] = useState(false);
     const [copied, setCopied] = useState(false);
@@ -64,7 +63,7 @@ export default function SnippetDetail({
 
     const handleSave = async () => {
         setSaving(true);
-        await onSave({ title, description, code, language });
+        await onSaveAction({ title, description, code, language });
         setSaving(false);
         setEditing(false);
     };
@@ -74,7 +73,7 @@ export default function SnippetDetail({
             setDeleting(true);
             return;
         }
-        await onDelete();
+        await onDeleteAction();
     };
 
     const inputClass =
@@ -218,12 +217,9 @@ export default function SnippetDetail({
                         spellCheck={false}
                     />
                 ) : (
-                    <div className="border-none">
-                        <CodeBlock
-                            code={snippet.code}
-                            language={snippet.language}
-                        />
-                    </div>
+                    <pre className="px-[24px] py-[20px] text-[12px] text-[#d4d4d8] font-mono leading-[1.75] overflow-auto whitespace-pre bg-[#0d0d0d] min-h-full">
+                        <code>{snippet.code}</code>
+                    </pre>
                 )}
             </div>
         </div>

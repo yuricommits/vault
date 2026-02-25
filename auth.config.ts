@@ -7,7 +7,7 @@ export const authConfig: NextAuthConfig = {
     callbacks: {
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
-            const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+            const isOnDashboard = nextUrl.pathname.startsWith("/dashboard") || nextUrl.pathname.startsWith("/admin");
             const isPublic =
                 ["/docs", "/login", "/register"].includes(nextUrl.pathname) ||
                 nextUrl.pathname.startsWith("/docs");

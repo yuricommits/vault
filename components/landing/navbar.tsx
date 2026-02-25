@@ -4,9 +4,10 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
 const NAV_LINKS = [
-    { label: "Features", href: "features" },
-    { label: "How it works", href: "how" },
-    { label: "Changelog", href: "changelog" },
+    { label: "Features", href: "features", scroll: true },
+    { label: "How it works", href: "how", scroll: true },
+    { label: "Changelog", href: "changelog", scroll: true },
+    { label: "Docs", href: "/docs", scroll: false },
 ];
 
 function smoothScrollTo(id: string) {
@@ -40,15 +41,25 @@ export default function Navbar() {
                 </Link>
 
                 <nav className="hidden md:flex flex-1 items-center gap-[2px]">
-                    {NAV_LINKS.map((l) => (
-                        <button
-                            key={l.label}
-                            onClick={() => smoothScrollTo(l.href)}
-                            className="font-mono px-[10px] py-[5px] text-[12.5px] text-text-3 rounded-xs transition-colors duration-[0.18s] hover:text-text-1 hover:bg-bg-2 bg-transparent border-none cursor-pointer"
-                        >
-                            {l.label}
-                        </button>
-                    ))}
+                    {NAV_LINKS.map((l) =>
+                        l.scroll ? (
+                            <button
+                                key={l.label}
+                                onClick={() => smoothScrollTo(l.href)}
+                                className="font-mono px-[10px] py-[5px] text-[12.5px] text-text-3 rounded-xs transition-colors duration-[0.18s] hover:text-text-1 hover:bg-bg-2 bg-transparent border-none cursor-pointer"
+                            >
+                                {l.label}
+                            </button>
+                        ) : (
+                            <Link
+                                key={l.label}
+                                href={l.href}
+                                className="font-mono px-[10px] py-[5px] text-[12.5px] text-text-3 rounded-xs transition-colors duration-[0.18s] hover:text-text-1 hover:bg-bg-2"
+                            >
+                                {l.label}
+                            </Link>
+                        ),
+                    )}
                 </nav>
 
                 <div className="hidden md:flex flex-shrink-0 items-center gap-2">
@@ -73,18 +84,29 @@ export default function Navbar() {
 
             {open && (
                 <div className="md:hidden flex flex-col gap-[2px] px-4 pt-2.5 pb-[18px] bg-bg border-t border-border">
-                    {NAV_LINKS.map((l) => (
-                        <button
-                            key={l.label}
-                            onClick={() => {
-                                smoothScrollTo(l.href);
-                                setOpen(false);
-                            }}
-                            className="font-mono px-2.5 py-[9px] text-[13px] text-text-2 hover:text-text-1 bg-transparent border-none cursor-pointer text-left"
-                        >
-                            {l.label}
-                        </button>
-                    ))}
+                    {NAV_LINKS.map((l) =>
+                        l.scroll ? (
+                            <button
+                                key={l.label}
+                                onClick={() => {
+                                    smoothScrollTo(l.href);
+                                    setOpen(false);
+                                }}
+                                className="font-mono px-2.5 py-[9px] text-[13px] text-text-2 hover:text-text-1 bg-transparent border-none cursor-pointer text-left"
+                            >
+                                {l.label}
+                            </button>
+                        ) : (
+                            <Link
+                                key={l.label}
+                                href={l.href}
+                                onClick={() => setOpen(false)}
+                                className="font-mono px-2.5 py-[9px] text-[13px] text-text-2 hover:text-text-1"
+                            >
+                                {l.label}
+                            </Link>
+                        ),
+                    )}
                     <div className="h-px bg-border my-2" />
                     <Link
                         href="/register"

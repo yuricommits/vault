@@ -5,6 +5,7 @@ import SidebarNav from "@/components/sidebar-nav";
 import KeyboardShortcuts from "@/components/keyboard-shortcuts";
 import SearchPalette from "@/components/search-palette";
 import { ToastProvider } from "@/components/toast";
+import FeedbackWidget from "@/components/feedback-widget";
 
 export default async function DashboardLayout({
     children,
@@ -20,6 +21,7 @@ export default async function DashboardLayout({
                 <div className="grid-bg" />
                 <KeyboardShortcuts />
                 <SearchPalette />
+		<FeedbackWidget />
 
                 {/* Top nav */}
                 <nav className="relative z-10 border-b border-border px-[24px] flex items-center h-[56px] gap-[16px]">

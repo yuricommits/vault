@@ -312,23 +312,26 @@ export default function SettingsPage() {
                         </div>
                     )}
 
-                    {/* Create token with auto-generated name */}
+                    {/* Create token */}
                     <div className="flex items-center gap-[10px]">
-                        <div className="flex-1 flex items-center gap-[6px] px-[12px] py-[9px] border border-border rounded-sm bg-bg-1">
+                        <div className="flex items-center gap-[6px] flex-1">
+                            <span className="text-[11px] text-text-4 font-mono">
+                                name
+                            </span>
                             <input
                                 value={tokenName}
                                 onChange={(e) => setTokenName(e.target.value)}
                                 onKeyDown={(e) =>
                                     e.key === "Enter" && handleCreateToken()
                                 }
-                                className="flex-1 bg-transparent text-[12px] font-mono text-text-1 placeholder:text-text-4 outline-none"
+                                className="flex-1 px-[10px] py-[8px] border border-border rounded-sm bg-bg-1 text-[12px] font-mono text-text-1 outline-none focus:border-border-3 transition-colors"
                             />
                             <button
                                 onClick={() =>
                                     setTokenName(generateTokenName())
                                 }
-                                className="text-text-4 hover:text-text-2 transition-colors flex-shrink-0"
-                                title="Regenerate name"
+                                className="text-text-4 hover:text-text-2 transition-colors p-[6px] border border-border rounded-sm bg-bg-1"
+                                title="Regenerate"
                             >
                                 <RefreshCw size={11} />
                             </button>

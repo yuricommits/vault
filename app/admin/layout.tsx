@@ -54,7 +54,7 @@ export default async function AdminLayout({
                     </form>
                 </div>
             </nav>
-            <main className="relative z-10 flex-1 overflow-hidden p-[24px]">
+            <main className="relative z-10 flex-1 overflow-hidden">
                 {children}
             </main>
         </div>

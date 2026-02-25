@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
         );
 
     // Generate a random token
-    const raw = `vlt_${randomBytes(16).toString("hex")}`;
+    const raw = `vlt_${randomBytes(12).toString("hex")}`;
     const hashed = createHash("sha256").update(raw).digest("hex");
 
     await db.insert(cliTokens).values({

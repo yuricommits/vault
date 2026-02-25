@@ -69,6 +69,11 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Vault uses the Anthropic API for AI-powered snippet enhancement. Each user brings their own Anthropic API key — add it in **Settings** after signing in. Get a key at [console.anthropic.com](https://console.anthropic.com/settings/keys).
 
+## CLI 
+
+A command-line interface for Vault — manage your code snippets from the terminal.
+Get it at [yuricommits/vault-cli](https://github.com/yuricommits/vault-cli).
+
 ## Contributing
 
 Pull requests are welcome. For major changes, open an issue first.

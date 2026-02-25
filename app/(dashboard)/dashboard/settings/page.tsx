@@ -6,9 +6,10 @@ import {
     Eye,
     EyeOff,
     Terminal,
-    Plus,
     Copy,
     Check,
+    LogOut,
+    RefreshCw,
 } from "lucide-react";
 
 interface CliToken {
@@ -28,6 +29,15 @@ const timeAgo = (date: string) => {
     return `${Math.floor(hours / 24)}d ago`;
 };
 
+const generateTokenName = () => {
+    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+    const random = Array.from(
+        { length: 8 },
+        () => chars[Math.floor(Math.random() * chars.length)],
+    ).join("");
+    return `vlt_${random}`;
+};
+
 export default function SettingsPage() {
     const [key, setKey] = useState("");
     const [masked, setMasked] = useState<string | null>(null);
@@ -37,13 +47,13 @@ export default function SettingsPage() {
     const [success, setSuccess] = useState("");
     const [showKey, setShowKey] = useState(false);
 
-    // CLI Tokens
     const [tokens, setTokens] = useState<CliToken[]>([]);
-    const [tokenName, setTokenName] = useState("");
+    const [tokenName, setTokenName] = useState(() => generateTokenName());
     const [creatingToken, setCreatingToken] = useState(false);
     const [newToken, setNewToken] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
     const [tokenError, setTokenError] = useState("");
+    const [signingOut, setSigningOut] = useState(false);
 
     const fetchTokens = () => {
         fetch("/api/tokens")
@@ -92,10 +102,6 @@ export default function SettingsPage() {
 
     const handleCreateToken = async () => {
         setTokenError("");
-        if (!tokenName.trim()) {
-            setTokenError("Token name is required");
-            return;
-        }
         setCreatingToken(true);
         const res = await fetch("/api/tokens", {
             method: "POST",
@@ -109,7 +115,7 @@ export default function SettingsPage() {
             return;
         }
         setNewToken(data.token);
-        setTokenName("");
+        setTokenName(generateTokenName());
         fetchTokens();
     };
 
@@ -129,12 +135,18 @@ export default function SettingsPage() {
         setTimeout(() => setCopied(false), 2000);
     };
 
+    const handleSignOut = async () => {
+        setSigningOut(true);
+        await fetch("/api/auth/signout", { method: "POST" });
+        window.location.href = "/login";
+    };
+
     return (
-        <div className="max-w-[600px] mx-auto py-[40px] px-[24px]">
+        <div className="max-w-[600px] mx-auto pt-[32px] pb-[60px] px-[24px]">
             <h1 className="text-[18px] font-semibold text-text-1 tracking-[-0.02em] mb-[8px]">
                 Settings
             </h1>
-            <p className="text-[12.5px] text-text-3 mb-[40px]">
+            <p className="text-[12.5px] text-text-3 mb-[48px]">
                 Manage your account preferences.
             </p>
 
@@ -152,7 +164,6 @@ export default function SettingsPage() {
                         </p>
                     </div>
                 </div>
-
                 <div className="px-[20px] py-[20px] bg-bg flex flex-col gap-[12px]">
                     {masked ? (
                         <div className="flex items-center gap-[10px]">
@@ -226,7 +237,7 @@ export default function SettingsPage() {
             </div>
 
             {/* CLI Tokens Section */}
-            <div className="border border-border rounded-lg overflow-hidden">
+            <div className="border border-border rounded-lg overflow-hidden mb-[24px]">
                 <div className="px-[20px] py-[16px] border-b border-border bg-bg-1 flex items-center gap-[10px]">
                     <Terminal size={14} className="text-text-3" />
                     <div>
@@ -239,9 +250,7 @@ export default function SettingsPage() {
                         </p>
                     </div>
                 </div>
-
                 <div className="px-[20px] py-[20px] bg-bg flex flex-col gap-[16px]">
-                    {/* New token revealed */}
                     {newToken && (
                         <div className="border border-green-400/20 bg-green-400/5 rounded-sm p-[12px] flex flex-col gap-[8px]">
                             <p className="text-[11px] text-green-400 font-mono">
@@ -273,7 +282,6 @@ export default function SettingsPage() {
                         </div>
                     )}
 
-                    {/* Existing tokens */}
                     {tokens.length > 0 && (
                         <div className="flex flex-col gap-[2px]">
                             {tokens.map((token) => (
@@ -304,23 +312,32 @@ export default function SettingsPage() {
                         </div>
                     )}
 
-                    {/* Create token */}
+                    {/* Create token with auto-generated name */}
                     <div className="flex items-center gap-[10px]">
-                        <input
-                            value={tokenName}
-                            onChange={(e) => setTokenName(e.target.value)}
-                            onKeyDown={(e) =>
-                                e.key === "Enter" && handleCreateToken()
-                            }
-                            placeholder="Token name (e.g. macbook)"
-                            className="flex-1 px-[12px] py-[9px] border border-border rounded-sm bg-bg-1 text-[12px] font-mono text-text-1 placeholder:text-text-4 focus:border-border-3 transition-colors outline-none"
-                        />
+                        <div className="flex-1 flex items-center gap-[6px] px-[12px] py-[9px] border border-border rounded-sm bg-bg-1">
+                            <input
+                                value={tokenName}
+                                onChange={(e) => setTokenName(e.target.value)}
+                                onKeyDown={(e) =>
+                                    e.key === "Enter" && handleCreateToken()
+                                }
+                                className="flex-1 bg-transparent text-[12px] font-mono text-text-1 placeholder:text-text-4 outline-none"
+                            />
+                            <button
+                                onClick={() =>
+                                    setTokenName(generateTokenName())
+                                }
+                                className="text-text-4 hover:text-text-2 transition-colors flex-shrink-0"
+                                title="Regenerate name"
+                            >
+                                <RefreshCw size={11} />
+                            </button>
+                        </div>
                         <button
                             onClick={handleCreateToken}
                             disabled={creatingToken || !tokenName.trim()}
-                            className="btn btn-solid disabled:opacity-40 disabled:cursor-not-allowed text-[12px] px-[12px] py-[9px] flex items-center gap-[5px]"
+                            className="btn btn-solid disabled:opacity-40 disabled:cursor-not-allowed text-[12px] px-[12px] py-[9px]"
                         >
-                            <Plus size={12} />
                             {creatingToken ? "creating..." : "create"}
                         </button>
                     </div>
@@ -334,13 +351,41 @@ export default function SettingsPage() {
                     <p className="text-[11px] text-text-4 leading-[1.6]">
                         Install the CLI with{" "}
                         <code className="text-text-2 bg-bg-1 px-[5px] py-[1px] rounded-xs border border-border">
-                            go install github.com/yourusername/vault-cli@latest
+                            go install github.com/yuricommits/vault-cli@latest
                         </code>{" "}
                         then run{" "}
                         <code className="text-text-2 bg-bg-1 px-[5px] py-[1px] rounded-xs border border-border">
                             vault auth login --token &lt;token&gt;
                         </code>
                     </p>
+                </div>
+            </div>
+
+            {/* Sign out */}
+            <div className="border border-border rounded-lg overflow-hidden">
+                <div className="px-[20px] py-[16px] border-b border-border bg-bg-1 flex items-center gap-[10px]">
+                    <LogOut size={14} className="text-text-3" />
+                    <div>
+                        <p className="text-[12.5px] font-semibold text-text-1">
+                            Account
+                        </p>
+                        <p className="text-[11px] text-text-4 mt-[2px]">
+                            Manage your session.
+                        </p>
+                    </div>
+                </div>
+                <div className="px-[20px] py-[16px] bg-bg flex items-center justify-between">
+                    <p className="text-[12px] text-text-3">
+                        Sign out of your Vault account.
+                    </p>
+                    <button
+                        onClick={handleSignOut}
+                        disabled={signingOut}
+                        className="flex items-center gap-[6px] px-[12px] py-[7px] border border-border rounded-sm text-[11.5px] font-mono text-text-3 hover:text-red-400 hover:border-red-400/30 transition-colors disabled:opacity-40"
+                    >
+                        <LogOut size={12} />
+                        {signingOut ? "signing out..." : "sign out"}
+                    </button>
                 </div>
             </div>
         </div>

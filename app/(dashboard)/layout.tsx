@@ -21,7 +21,7 @@ export default async function DashboardLayout({
                 <div className="grid-bg" />
                 <KeyboardShortcuts />
                 <SearchPalette />
-		<FeedbackWidget />
+                <FeedbackWidget />
 
                 {/* Top nav */}
                 <nav className="relative z-10 border-b border-border px-[24px] flex items-center h-[56px] gap-[16px]">
@@ -32,35 +32,16 @@ export default async function DashboardLayout({
                         <span className="text-[16px] text-text-3">◈</span>
                         vault
                     </Link>
-
-                    <div className="ml-auto flex items-center gap-[16px]">
-                        <span className="text-[11.5px] text-text-4 font-mono">
-                            {session.user.name}
-                        </span>
-                        <form
-                            action={async () => {
-                                "use server";
-                                await signOut({ redirectTo: "/login" });
-                            }}
-                        >
-                            <button
-                                type="submit"
-                                className="text-[11.5px] text-text-4 hover:text-text-1 transition-colors font-mono"
-                            >
-                                sign out
-                            </button>
-                        </form>
-                    </div>
                 </nav>
 
                 <div className="relative z-10 flex flex-1 overflow-hidden">
                     {/* Sidebar */}
-                    <aside className="w-[192px] border-r border-border flex flex-col flex-shrink-0 pl-[8px]">
+                    <aside className="w-[192px] border-r border-border flex flex-col flex-shrink-0 pl-[8px] overflow-hidden">
                         <SidebarNav />
                     </aside>
 
                     {/* Main */}
-                    <main className="flex-1 overflow-hidden p-[24px]">
+                    <main className="flex-1 overflow-y-auto p-[24px]">
                         {children}
                     </main>
                 </div>

@@ -9,6 +9,7 @@ import {
     unique,
     primaryKey,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 // ─── Users ───────────────────────────────────────────────
 export const users = pgTable("users", {
@@ -17,6 +18,7 @@ export const users = pgTable("users", {
     email: varchar("email", { length: 255 }).notNull().unique(),
     passwordHash: text("password_hash"),
     anthropicKey: text("anthropic_key"),
+    isAdmin: boolean("is_admin").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -106,3 +108,24 @@ export const cliTokens = pgTable("cli_tokens", {
     createdAt: timestamp("created_at").defaultNow().notNull(),
     lastUsedAt: timestamp("last_used_at"),
 });
+
+// ─── Feedback ─────────────────────────────────────────────
+export const feedback = pgTable("feedback", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id").references(() => users.id, {
+        onDelete: "set null",
+    }),
+    type: varchar("type", { length: 50 }).notNull(), // "bug" | "feature" | "general"
+    message: text("message").notNull(),
+    status: varchar("status", { length: 20 }).default("open").notNull(), // "open" | "replied"
+    reply: text("reply"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    repliedAt: timestamp("replied_at"),
+});
+
+export const feedbackRelations = relations(feedback, ({ one }) => ({
+    user: one(users, {
+        fields: [feedback.userId],
+        references: [users.id],
+    }),
+}));
